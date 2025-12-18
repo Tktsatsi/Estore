@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+{% block title %}{{ action }} Store - eStore{% endblock %}
+
+{% block extra_css %}
+<style>
+  .form-container {
+    max-width: 700px;
+    margin: 2rem auto;
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .form-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #E0E0E0;
+  }
+  
+  .form-header h2 {
+    color: #0B79D0;
+    margin-bottom: 0.5rem;
+  }
+  
+  .form-group {
+    margin-bottom: 1.5rem;
+  }
+  
+  .form-group label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: block;
+    color: #333;
+  }
+  
+  .form-control, .form-select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+  
+  .form-control:focus, .form-select:focus {
+    outline: none;
+    border-color: #0B79D0;
+    box-shadow: 0 0 0 3px rgba(11, 121, 208, 0.1);
+  }
+  
+  textarea.form-control {
+    resize: vertical;
+    min-height: 100px;
+  }
+  
+  .help-text {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 0.3rem;
+    display: block;
+  }
+  
+  .errorlist {
+    list-style: none;
+    padding: 0;
+    margin: 0.5rem 0 0 0;
+  }
+  
+  .errorlist li {
+    color: #dc3545;
+    font-size: 0.9rem;
+    padding: 0.3rem 0;
+  }
+  
+  .form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid #E0E0E0;
+  }
+  
+  .btn {
+    padding: 0.75rem 2rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+    display: inline-block;
+  }
+  
+  .btn-primary {
+    background-color: #0B79D0;
+    color: white;
+    border: none;
+  }
+  
+  .btn-primary:hover {
+    background-color: #00396B;
+  }
+  
+  .btn-secondary {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+  }
+  
+  .btn-secondary:hover {
+    background-color: #5a6268;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="form-container">
+    <div class="form-header">
+      <h2>
+        <i class="bi bi-shop"></i> {{ action }} Store
+      </h2>
+      <p style="color: #666;">
+        {% if action == "Create" %}
+          Create a new store to start selling your products
+        {% else %}
+          Update your store information
+        {% endif %}
+      </p>
+    </div>
+    
+    <form method="post" novalidate>
+      {% csrf_token %}
+      
+      <!-- Store Name -->
+      <div class="form-group">
+        <label for="{{ form.name.id_for_label }}">
+          <i class="bi bi-tag"></i> Store Name *
+        </label>
+        {{ form.name }}
+        {% if form.name.help_text %}
+          <span class="help-text">{{ form.name.help_text }}</span>
+        {% endif %}
+        {% if form.name.errors %}
+          <ul class="errorlist">
+            {% for error in form.name.errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+      
+      <!-- Store Slug -->
+      <div class="form-group">
+        <label for="{{ form.slug.id_for_label }}">
+          <i class="bi bi-link-45deg"></i> Store URL Slug *
+        </label>
+        {{ form.slug }}
+        {% if form.slug.help_text %}
+          <span class="help-text">{{ form.slug.help_text }}</span>
+        {% endif %}
+        {% if form.slug.errors %}
+          <ul class="errorlist">
+            {% for error in form.slug.errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+        <span class="help-text">
+          Your store will be accessible at: <strong>/store/{{ form.slug.value|default:"your-slug" }}/</strong>
+        </span>
+      </div>
+      
+      <!-- Store Description -->
+      <div class="form-group">
+        <label for="{{ form.description.id_for_label }}">
+          <i class="bi bi-text-paragraph"></i> Description
+        </label>
+        {{ form.description }}
+        {% if form.description.help_text %}
+          <span class="help-text">{{ form.description.help_text }}</span>
+        {% endif %}
+        {% if form.description.errors %}
+          <ul class="errorlist">
+            {% for error in form.description.errors %}
+              <li>{{ error }}</li>
+            {% endfor %}
+          </ul>
+        {% endif %}
+      </div>
+      
+      <!-- Non-field errors -->
+      {% if form.non_field_errors %}
+        <ul class="errorlist">
+          {% for error in form.non_field_errors %}
+            <li>{{ error }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+      
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-check-circle"></i> 
+          {% if action == "Create" %}Create Store{% else %}Save Changes{% endif %}
+        </button>
+        <a href="{% url 'vendor_dashboard' %}" class="btn btn-secondary">
+          <i class="bi bi-x-circle"></i> Cancel
+        </a>
+      </div>
+    </form>
+  </div>
+</div>
+{% endblock %}

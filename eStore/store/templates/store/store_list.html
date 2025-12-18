@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Page Header -->
+    <div class="text-center mb-5">
+        <h1 class="display-4 fw-bold mb-3">Our Stores</h1>
+        <p class="lead text-muted">Browse through our collection of amazing stores</p>
+    </div>
+
+    <!-- Stores Grid -->
+    {% if stores %}
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        {% for store in stores %}
+        <div class="col">
+            <div class="card h-100 shadow-sm hover-card">
+                <!-- Store Image -->
+                {% if store.image %}
+                <img src="{{ store.image.url }}" class="card-img-top" alt="{{ store.name }}" style="height: 200px; object-fit: cover;">
+                {% else %}
+                <div class="card-img-top bg-gradient d-flex align-items-center justify-content-center" style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                    <i class="fas fa-store fa-4x text-white"></i>
+                </div>
+                {% endif %}
+
+                <!-- Store Info -->
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title fw-bold">{{ store.name }}</h5>
+                    
+                    {% if store.description %}
+                    <p class="card-text text-muted flex-grow-1">
+                        {{ store.description|truncatewords:20 }}
+                    </p>
+                    {% endif %}
+
+                    <!-- Store Stats (if available) -->
+                    {% if store.product_count or store.rating %}
+                    <div class="d-flex justify-content-between align-items-center mb-3 text-muted small">
+                        {% if store.product_count %}
+                        <span><i class="fas fa-box"></i> {{ store.product_count }} Products</span>
+                        {% endif %}
+                        {% if store.rating %}
+                        <span><i class="fas fa-star text-warning"></i> {{ store.rating }}</span>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <!-- View Store Button -->
+                    <a href="{% url 'store_detail' store.slug %}" class="btn btn-primary w-100">
+                        <i class="fas fa-arrow-right me-2"></i>Visit Store
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <!-- No Stores Found -->
+    <div class="text-center py-5">
+        <i class="fas fa-store-slash fa-4x text-muted mb-3"></i>
+        <h3 class="text-muted">No Stores Found</h3>
+        <p class="text-muted">Check back later for new stores!</p>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Custom Styles -->
+<style>
+    .hover-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+    }
+
+    .hover-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    .card-img-top {
+        border-radius: 12px 12px 0 0;
+    }
+
+    .bg-gradient {
+        border-radius: 12px 12px 0 0;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        padding: 12px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        transform: scale(1.02);
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    .display-4 {
+        color: #2d3748;
+    }
+
+    .lead {
+        font-size: 1.1rem;
+    }
+</style>
+{% endblock %}

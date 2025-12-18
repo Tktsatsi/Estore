@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+{% block title %}{% if is_edit %}Edit{% else %}Write{% endif %} Review - {{ product.name }}{% endblock %}
+
+{% block extra_css %}
+<style>
+  .review-container {
+    max-width: 700px;
+    margin: 2rem auto;
+  }
+  
+  .review-card {
+    background: white;
+    border-radius: 8px;
+    padding: 2rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  }
+  
+  .product-info {
+    display: flex;
+    gap: 1.5rem;
+    padding: 1rem;
+    background: #f8f9fa;
+    border-radius: 4px;
+    margin-bottom: 2rem;
+  }
+  
+  .product-image {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+  
+  .product-details h3 {
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .verified-alert {
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    color: #155724;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .unverified-alert {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    color: #856404;
+    padding: 1rem;
+    border-radius: 4px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  .form-label {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: block;
+  }
+  
+  .form-control {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+  }
+  
+  .form-control:focus {
+    outline: none;
+    border-color: #0B79D0;
+    box-shadow: 0 0 0 3px rgba(11, 121, 208, 0.1);
+  }
+  
+  textarea.form-control {
+    min-height: 150px;
+    resize: vertical;
+  }
+  
+  .btn-primary {
+    background-color: #0B79D0;
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+  }
+  
+  .btn-primary:hover {
+    background-color: #00396B;
+  }
+  
+  .btn-outline-secondary {
+    background-color: transparent;
+    color: #6c757d;
+    border: 1px solid #6c757d;
+    padding: 0.75rem 2rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.2s;
+  }
+  
+  .btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: white;
+    text-decoration: none;
+  }
+  
+  .form-text {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-top: 0.25rem;
+    display: block;
+  }
+  
+  .guidelines {
+    background: #f8f9fa;
+    border-left: 4px solid #0B79D0;
+    padding: 1rem;
+    margin-top: 2rem;
+  }
+  
+  .guidelines h4 {
+    font-size: 1rem;
+    margin-bottom: 0.75rem;
+    color: #333;
+  }
+  
+  .guidelines ul {
+    margin: 0;
+    padding-left: 1.5rem;
+  }
+  
+  .guidelines li {
+    margin-bottom: 0.5rem;
+    color: #666;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="review-container">
+  <div class="review-card">
+    <h2 class="mb-4">
+      {% if is_edit %}
+        <i class="bi bi-pencil"></i> Edit Your Review
+      {% else %}
+        <i class="bi bi-star"></i> Write a Review
+      {% endif %}
+    </h2>
+    
+    <!-- Product Info -->
+    <div class="product-info">
+      {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" class="product-image">
+      {% else %}
+        <div class="product-image d-flex align-items-center justify-content-center bg-light">
+          <i class="bi bi-image" style="font-size: 2rem; color: #ccc;"></i>
+        </div>
+      {% endif %}
+      
+      <div class="product-details">
+        <h3>{{ product.name }}</h3>
+        <p class="text-muted mb-0">{{ product.store.name }}</p>
+      </div>
+    </div>
+    
+    <!-- Verified Purchase Status -->
+    {% if has_purchased %}
+      <div class="verified-alert">
+        <i class="bi bi-check-circle-fill"></i> 
+        <strong>Verified Purchase:</strong> You purchased this product. Your review will be marked as verified.
+      </div>
+    {% else %}
+      <div class="unverified-alert">
+        <i class="bi bi-info-circle-fill"></i> 
+        <strong>Unverified Purchase:</strong> You haven't purchased this product yet. Your review will be marked as unverified.
+      </div>
+    {% endif %}
+    
+    <!-- Review Form -->
+    <form method="post">
+      {% csrf_token %}
+      
+      <div class="mb-3">
+        <label for="title" class="form-label">Review Title (Optional)</label>
+        <input 
+          type="text" 
+          class="form-control" 
+          id="title" 
+          name="title" 
+          placeholder="Summarize your experience..."
+          value="{% if existing_review %}{{ existing_review.title }}{% endif %}"
+          maxlength="200"
+        >
+        <small class="form-text">Give your review a short, descriptive title</small>
+      </div>
+      
+      <div class="mb-3">
+        <label for="comment" class="form-label">Your Review <span class="text-danger">*</span></label>
+        <textarea 
+          class="form-control" 
+          id="comment" 
+          name="comment" 
+          placeholder="Share your thoughts about this product..."
+          required
+        >{% if existing_review %}{{ existing_review.comment }}{% endif %}</textarea>
+        <small class="form-text">Be specific and honest about your experience</small>
+      </div>
+      
+      <div class="d-flex gap-2">
+        <button type="submit" class="btn-primary">
+          <i class="bi bi-check-circle"></i> 
+          {% if is_edit %}Update Review{% else %}Submit Review{% endif %}
+        </button>
+        <a href="{% url 'product_detail' product.store.slug product.slug %}" class="btn-outline-secondary">
+          <i class="bi bi-x-circle"></i> Cancel
+        </a>
+      </div>
+    </form>
+    
+  </div>
+</div>
+{% endblock %}

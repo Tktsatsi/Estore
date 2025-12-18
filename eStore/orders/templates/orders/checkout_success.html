@@ -1,0 +1,6 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Order placed</h2>
+<p>Thanks — your order #{{ order.id }} was created. Total: R{{ order.total }}</p>
+<p><a href="{% url 'my_orders' %}">View my orders</a></p>
+{% endblock %}

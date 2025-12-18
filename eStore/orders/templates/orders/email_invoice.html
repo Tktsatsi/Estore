@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .header {
+            background: linear-gradient(135deg, #0B79D0 0%, #00396B 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .header h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+        .header p {
+            margin: 10px 0 0 0;
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        .content {
+            padding: 30px 20px;
+        }
+        .order-details {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #0B79D0;
+        }
+        .order-details h2 {
+            margin: 0 0 15px 0;
+            color: #0B79D0;
+            font-size: 22px;
+        }
+        .order-details p {
+            margin: 8px 0;
+            font-size: 15px;
+        }
+        .order-details strong {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+        }
+        th {
+            background: #0B79D0;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .total-row {
+            background: #f8f9fa;
+            font-weight: bold;
+        }
+        .total-row td {
+            font-size: 18px;
+            color: #0B79D0;
+            padding: 15px 12px;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            background: #f8f9fa;
+            color: #666;
+            font-size: 14px;
+            border-top: 1px solid #e0e0e0;
+        }
+        .footer p {
+            margin: 5px 0;
+        }
+        .button {
+            display: inline-block;
+            background: #0B79D0;
+            color: white;
+            padding: 12px 30px;
+            text-decoration: none;
+            border-radius: 4px;
+            margin: 20px 0;
+            font-weight: 600;
+        }
+        .status-badge {
+            display: inline-block;
+            background: #d4edda;
+            color: #155724;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🛍️ Order Confirmation</h1>
+            <p>Thank you for your purchase!</p>
+        </div>
+        
+        <div class="content">
+            <p>Hi {{ order.user.username }},</p>
+            <p>Your order has been successfully placed and is being processed. Below are the details of your order:</p>
+            
+            <div class="order-details">
+                <h2>Order #{{ order.id }}</h2>
+                <p><strong>Order Date:</strong> {{ order.created_at|date:"F d, Y" }} at {{ order.created_at|time:"g:i A" }}</p>
+                <p><strong>Status:</strong> <span class="status-badge">{{ order.get_status_display }}</span></p>
+            </div>
+            
+            <h3 style="color: #333; margin-top: 30px;">Order Items</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.items.all %}
+                    <tr>
+                        <td>{{ item.product.name }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>R{{ item.price }}</td>
+                        <td>R{{ item.get_total }}</td>
+                    </tr>
+                    {% endfor %}
+                    <tr class="total-row">
+                        <td colspan="3" style="text-align: right;"><strong>Total:</strong></td>
+                        <td><strong>R{{ order.total }}</strong></td>
+                    </tr>
+                </tbody>
+            </table>
+            
+            <div style="text-align: center; margin: 30px 0;">
+                <p style="color: #666;">You can track your order status in your account.</p>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p><strong>Thank you for shopping with eStore!</strong></p>
+            <p>If you have any questions about your order, please contact us.</p>
+            <p style="margin-top: 15px; font-size: 12px; color: #999;">
+                This is an automated email. Please do not reply to this message.
+            </p>
+        </div>
+    </div>
+</body>
+</html>

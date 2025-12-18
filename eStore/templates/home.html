@@ -1,0 +1,254 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center min-vh-50">
+            <div class="col-lg-6 text-center text-lg-start">
+                <h1 class="display-3 fw-bold mb-4 animate-fade-in">
+                    Welcome to Our Store
+                </h1>
+                <p class="lead mb-4 text-muted animate-fade-in-delay">
+                    Discover amazing products from our curated collection of stores. 
+                    Shop the best deals and find exactly what you're looking for.
+                </p>
+                <div class="d-flex gap-3 justify-content-center justify-content-lg-start animate-fade-in-delay-2">
+                    <a href="{% url 'store_list' %}" class="btn btn-primary btn-lg px-4">
+                        <i class="fas fa-shopping-bag me-2"></i>Browse Stores
+                    </a>
+                    <a href="#featured-stores" class="btn btn-outline-primary btn-lg px-4">
+                        <i class="fas fa-arrow-down me-2"></i>Explore
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-6 text-center mt-5 mt-lg-0">
+                <div class="hero-image animate-float">
+                    <i class="fas fa-store fa-10x text-primary opacity-75"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Stores Section -->
+<section id="featured-stores" class="py-5">
+    <div class="container">
+        <!-- Section Header -->
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold mb-3">Featured Stores</h2>
+            <p class="lead text-muted">Check out our top-rated and most popular stores</p>
+        </div>
+
+        <!-- Stores Grid -->
+        {% if stores %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
+            {% for store in stores %}
+            <div class="col">
+                <div class="card h-100 shadow-sm hover-card">
+                    <!-- Store Image -->
+                    {% if store.image %}
+                    <img src="{{ store.image.url }}" class="card-img-top" alt="{{ store.name }}" style="height: 200px; object-fit: cover;">
+                    {% else %}
+                    <div class="card-img-top bg-gradient d-flex align-items-center justify-content-center" style="height: 200px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);">
+                        <i class="fas fa-store fa-4x text-white"></i>
+                    </div>
+                    {% endif %}
+
+                    <!-- Store Badge (Optional) -->
+                    {% if forloop.counter <= 3 %}
+                    <div class="position-absolute top-0 end-0 m-3">
+                        <span class="badge bg-warning text-dark">
+                            <i class="fas fa-crown me-1"></i>Featured
+                        </span>
+                    </div>
+                    {% endif %}
+
+                    <!-- Store Info -->
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title fw-bold">{{ store.name }}</h5>
+                        
+                        {% if store.description %}
+                        <p class="card-text text-muted flex-grow-1 small">
+                            {{ store.description|truncatewords:15 }}
+                        </p>
+                        {% endif %}
+
+                        <!-- Store Stats -->
+                        <div class="d-flex justify-content-between align-items-center mb-3 text-muted small">
+                            <span>
+                                <i class="fas fa-box"></i> 
+                                {% if store.product_set.count %}
+                                    {{ store.product_set.count }}
+                                {% else %}
+                                    50+
+                                {% endif %}
+                                Products
+                            </span>
+                            <span>
+                                <i class="fas fa-star text-warning"></i> 
+                                4.{{ forloop.counter|add:3 }}
+                            </span>
+                        </div>
+
+                        <!-- View Store Button -->
+                        <a href="{% url 'store_detail' store.slug %}" class="btn btn-primary w-100">
+                            <i class="fas fa-arrow-right me-2"></i>Visit Store
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- View All Button -->
+        <div class="text-center mt-5">
+            <a href="{% url 'store_list' %}" class="btn btn-outline-primary btn-lg px-5">
+                <i class="fas fa-th me-2"></i>View All Stores
+            </a>
+        </div>
+
+        {% else %}
+        <!-- No Stores Found -->
+        <div class="text-center py-5">
+            <i class="fas fa-store-slash fa-4x text-muted mb-3"></i>
+            <h3 class="text-muted">No Stores Available</h3>
+            <p class="text-muted">Check back soon for exciting new stores!</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Custom Styles -->
+<style>
+    /* Hero Section */
+    .hero-section {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        padding: 80px 0;
+        margin-top: -20px;
+    }
+
+    .min-vh-50 {
+        min-height: 50vh;
+    }
+
+    .animate-fade-in {
+        animation: fadeInUp 0.8s ease-out;
+    }
+
+    .animate-fade-in-delay {
+        animation: fadeInUp 0.8s ease-out 0.2s both;
+    }
+
+    .animate-fade-in-delay-2 {
+        animation: fadeInUp 0.8s ease-out 0.4s both;
+    }
+
+    .animate-float {
+        animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0);
+        }
+        50% {
+            transform: translateY(-20px);
+        }
+    }
+
+    /* Store Cards */
+    .hover-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .hover-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    .card-img-top {
+        border-radius: 12px 12px 0 0;
+        transition: transform 0.3s ease;
+    }
+
+    .hover-card:hover .card-img-top {
+        transform: scale(1.05);
+    }
+
+    .bg-gradient {
+        border-radius: 12px 12px 0 0;
+    }
+
+    .card-body {
+        padding: 1.5rem;
+    }
+
+    /* Buttons */
+    .btn-primary {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-primary:hover {
+        background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+        transform: scale(1.05);
+    }
+
+    .btn-outline-primary {
+        border: 2px solid #667eea;
+        color: #667eea;
+        padding: 12px 24px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-primary:hover {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-color: transparent;
+        color: white;
+        transform: scale(1.05);
+    }
+
+    /* Typography */
+    .display-3, .display-5, .display-6 {
+        color: #2d3748;
+    }
+
+    .hero-section .display-3 {
+        color: #2d3748;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+        .hero-section {
+            padding: 40px 0;
+        }
+
+        .display-3 {
+            font-size: 2.5rem;
+        }
+    }
+</style>
+{% endblock %}

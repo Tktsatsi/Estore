@@ -1,0 +1,339 @@
+{% extends 'base.html' %}
+{% block title %}My Account - eStore{% endblock %}
+
+{% block extra_css %}
+<style>
+  .dashboard-header {
+    background: linear-gradient(135deg, #0B79D0 0%, #00396B 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+  }
+  
+  .dashboard-header h1 {
+    margin-bottom: 0.5rem;
+  }
+  
+  .account-badges {
+    margin-top: 1rem;
+  }
+  
+  .badge-role {
+    display: inline-block;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    margin-right: 0.5rem;
+  }
+  
+  .badge-buyer {
+    background-color: rgba(255, 255, 255, 0.2);
+  }
+  
+  .badge-vendor {
+    background-color: rgba(255, 107, 0, 0.8);
+  }
+  
+  .quick-actions {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .action-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  
+  .action-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    text-decoration: none;
+    color: inherit;
+  }
+  
+  .action-icon {
+    font-size: 3rem;
+    color: #0B79D0;
+    margin-bottom: 1rem;
+  }
+  
+  .action-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    color: #333;
+  }
+  
+  .action-description {
+    font-size: 0.9rem;
+    color: #666;
+  }
+  
+  .section-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+  
+  .stores-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+  
+  .store-card {
+    background: white;
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    padding: 1.5rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  
+  .store-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  }
+  
+  .store-name {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #0B79D0;
+    margin-bottom: 0.5rem;
+  }
+  
+  .store-description {
+    color: #666;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
+  }
+  
+  .store-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  
+  .btn-sm {
+    padding: 0.4rem 0.8rem;
+    font-size: 0.9rem;
+    border-radius: 4px;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.2s;
+  }
+  
+  .btn-primary-sm {
+    background-color: #0B79D0;
+    color: white;
+    border: none;
+  }
+  
+  .btn-primary-sm:hover {
+    background-color: #00396B;
+    color: white;
+  }
+  
+  .btn-secondary-sm {
+    background-color: #6c757d;
+    color: white;
+    border: none;
+  }
+  
+  .btn-secondary-sm:hover {
+    background-color: #5a6268;
+    color: white;
+  }
+  
+  .btn-danger-sm {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+  }
+  
+  .btn-danger-sm:hover {
+    background-color: #c82333;
+    color: white;
+  }
+  
+  .no-stores {
+    background: white;
+    padding: 3rem;
+    border-radius: 8px;
+    text-align: center;
+    color: #666;
+  }
+  
+  .no-stores i {
+    font-size: 4rem;
+    color: #ccc;
+    margin-bottom: 1rem;
+  }
+  
+  .products-section {
+    background: white;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+  }
+  
+  .product-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #E0E0E0;
+  }
+  
+  .product-item:last-child {
+    border-bottom: none;
+  }
+  
+  .product-info {
+    flex: 1;
+  }
+  
+  .product-name {
+    font-weight: 600;
+    color: #333;
+  }
+  
+  .product-store {
+    font-size: 0.85rem;
+    color: #666;
+  }
+  
+  .product-price {
+    font-weight: bold;
+    color: #0B79D0;
+    margin-left: 1rem;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+  <!-- Dashboard Header -->
+  <div class="dashboard-header">
+    <h1><i class="bi bi-person-circle"></i> Welcome, {{ user.username }}!</h1>
+    <p>Manage your account, orders, and more</p>
+    <div class="account-badges">
+      {% if profile.is_buyer %}
+        <span class="badge-role badge-buyer">
+          <i class="bi bi-bag-heart"></i> Buyer
+        </span>
+      {% endif %}
+      {% if profile.is_seller %}
+        <span class="badge-role badge-vendor">
+          <i class="bi bi-shop"></i> Vendor
+        </span>
+      {% endif %}
+    </div>
+  </div>
+  
+  <!-- Quick Actions -->
+  <div class="quick-actions">
+    <a href="{% url 'store_list' %}" class="action-card">
+      <div class="action-icon">
+        <i class="bi bi-grid-3x3-gap"></i>
+      </div>
+      <div class="action-title">Browse Products</div>
+      <div class="action-description">Discover products from all stores</div>
+    </a>
+    
+    <a href="{% url 'cart_detail' %}" class="action-card">
+      <div class="action-icon">
+        <i class="bi bi-cart3"></i>
+      </div>
+      <div class="action-title">My Cart</div>
+      <div class="action-description">View your shopping cart</div>
+    </a>
+    
+    <a href="{% url 'my_orders' %}" class="action-card">
+      <div class="action-icon">
+        <i class="bi bi-box-seam"></i>
+      </div>
+      <div class="action-title">My Orders</div>
+      <div class="action-description">Track your order history</div>
+    </a>
+    
+    {% if profile.is_seller %}
+      <a href="{% url 'vendor_dashboard' %}" class="action-card" style="background: linear-gradient(135deg, #0B79D0 0%, #00396B 100%); color: white;">
+        <div class="action-icon" style="color: white;">
+          <i class="bi bi-speedometer2"></i>
+        </div>
+        <div class="action-title" style="color: white;">Vendor Dashboard</div>
+        <div class="action-description" style="color: rgba(255,255,255,0.9);">Manage your stores & products</div>
+      </a>
+    {% endif %}
+  </div>
+  
+  <!-- Vendor Section -->
+  {% if profile.is_seller %}
+    <h2 class="section-title"><i class="bi bi-shop"></i> My Stores</h2>
+    
+    {% if stores %}
+      <div class="stores-grid">
+        {% for store in stores %}
+          <div class="store-card">
+            <div class="store-name">{{ store.name }}</div>
+            <div class="store-description">{{ store.description|truncatewords:20 }}</div>
+            <div class="store-actions">
+              <a href="{% url 'manage_products' store.slug %}" class="btn-sm btn-primary-sm">
+                <i class="bi bi-box"></i> Products
+              </a>
+              <a href="{% url 'edit_store' store.slug %}" class="btn-sm btn-secondary-sm">
+                <i class="bi bi-pencil"></i> Edit
+              </a>
+              <a href="{% url 'delete_store' store.slug %}" class="btn-sm btn-danger-sm">
+                <i class="bi bi-trash"></i> Delete
+              </a>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+      
+      <a href="{% url 'create_store' %}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Create New Store
+      </a>
+    {% else %}
+      <div class="no-stores">
+        <i class="bi bi-shop"></i>
+        <h3>You don't have any stores yet</h3>
+        <p>Create your first store to start selling products!</p>
+        <a href="{% url 'create_store' %}" class="btn btn-primary mt-3">
+          <i class="bi bi-plus-circle"></i> Create Your First Store
+        </a>
+      </div>
+    {% endif %}
+    
+    <!-- Recent Products -->
+    {% if products %}
+      <div class="products-section mt-4">
+        <h3 class="section-title"><i class="bi bi-box-seam"></i> Recent Products</h3>
+        {% for product in products %}
+          <div class="product-item">
+            <div class="product-info">
+              <div class="product-name">{{ product.name }}</div>
+              <div class="product-store">
+                <i class="bi bi-shop"></i> {{ product.store.name }}
+              </div>
+            </div>
+            <div class="product-price">R {{ product.price }}</div>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endif %}
+</div>
+{% endblock %}
