@@ -9,7 +9,8 @@ https://docs.djangoproject.com/en/5.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.2/ref/settings/
 """
-
+import os
+from dotenv import load_dotenv
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -20,14 +21,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = (
-    "django-insecure-xhfr%@_2ox-ab)$3j1)z#2=0dp$(tomnu%*&0axh8krb777#40"
-)
+load_dotenv(BASE_DIR/ ".env")
+SECRET_KEY = os.getenv("SECRET_KEY")
+    
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG =os.getenv("DEBUG", "False") == "True"
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
 
 # Application definition
@@ -84,11 +85,11 @@ WSGI_APPLICATION = "eStore.wsgi.application"
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.mysql",
-        "NAME": "estore_db",
-        "USER": "estore_user",
-        "PASSWORD": "admin1",
-        "HOST": "host.docker.internal",
-        "PORT": "3306",
+        "NAME": os.getenv('DB_NAME'),
+        "USER": os.getenv("DB_USER"),
+        "PASSWORD": os.getenv("DB_PASSWORD"),
+        "HOST": os.getenv("DB_HOST"),
+        "PORT": os.getenv("DB_PORT"),
         "OPTIONS": {
             "init_command": "SET sql_mode='STRICT_TRANS_TABLES'",
             "charset": "utf8mb4",
@@ -171,8 +172,8 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp.gmail.com"
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = "tktsatsi@gmail.com"
-EMAIL_HOST_PASSWORD = "ydmhmntriayxsprx"
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = "eStore <noreply@estore.com>"
 
 # Password Reset Token Timeout (15 minutes = 900 seconds)
@@ -189,11 +190,10 @@ REST_FRAMEWORK = {
     ],
 }
 
-# Twitter API Configuration (hardcoded for now)
-# Keys are not valid, this is just for demostration
-TWITTER_API_KEY = "8Wh1yxvdt8WPYJj4IN3GMRvM"
-TWITTER_API_SECRET = "lcM9d2rvl8rxHeFJJ5eNBiCg5QY9VnPGJ2euW2GviHGKnLXAd"
-TWITTER_ACCESS_TOKEN = "1983641066634145794-v2dFQHuQoWlGrwr4KiQKTgcW0RHr6"
-TWITTER_ACCESS_TOKEN_SECRET = "z5NoLsn9OVocOZ11N5zGpDlq84jilHRS2uSTKGfjmbwW"
+TWITTER_API_KEY =os.getenv("TWITTER_API_KEY") 
+TWITTER_API_SECRET = os.getenv("TWITTER_API_SECRET")
+TWITTER_ACCESS_TOKEN = os.getenv("TWITTER_ACCESS_TOKEN")
+TWITTER_ACCESS_TOKEN_SECRET = os.getenv("TWITTER_ACCESS_TOKEN_SECRET") 
 
-ENABLE_TWITTER = True
+
+ENABLE_TWITTER = os.getenv("ENABLE_TWITTER", "False") == "True"
