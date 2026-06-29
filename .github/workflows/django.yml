@@ -15,7 +15,7 @@ jobs:
     
     defaults:
       run:
-        working-directory: eStore
+        working-directory: ./Estore
 
     services:
       mariadb:
@@ -57,6 +57,7 @@ jobs:
             pkg-config
 
       - name: Install Python dependencies
+        working-directory: ./Estore
         run: pip install -r requirements.txt
 
       - name: Wait for MariaDB
@@ -67,13 +68,13 @@ jobs:
           done
 
       - name: Apply migrations
-        working-directory: ./Estsore
+        working-directory: ./Estore
         run: python manage.py migrate
 
       - name: Run tests
-        working-directory: ./Estsore
+        working-directory: ./Estore
         run: python manage.py test
 
       - name: Build Docker image
-        working-directory: ./Estsore
+        working-directory: ./Estore
         run: docker build -t estore .
