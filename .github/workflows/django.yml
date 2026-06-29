@@ -71,11 +71,11 @@ jobs:
 
       - name: Apply migrations
         
-        run: python manage.py migrate
+        run: python eStore/manage.py migrate
 
       - name: Run tests
        
-        run: python manage.py test
+        run: python eStore/manage.py test
 
       - name: Build Docker image
        
