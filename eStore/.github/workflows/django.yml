@@ -1,0 +1,72 @@
+name: Django CI
+
+on:
+  push:
+    branches:
+      - main
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      mariadb:
+        image: mariadb:11
+
+        env:
+          MARIADB_DATABASE: testdb
+          MARIADB_USER: testuser
+          MARIADB_PASSWORD: testpass
+          MARIADB_ROOT_PASSWORD: rootpass
+
+        ports:
+          - 3306:3306
+
+    env:
+      DB_NAME: testdb
+      DB_USER: testuser
+      DB_PASSWORD: testpass
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      SECRET_KEY: github-secret-key
+      DEBUG: False
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            default-libmysqlclient-dev \
+            gcc \
+            pkg-config
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Wait for MariaDB
+        run: |
+          until mysqladmin ping -h127.0.0.1 -utestuser -ptestpass --silent
+          do
+            sleep 2
+          done
+
+      - name: Apply migrations
+        run: python manage.py migrate
+
+      - name: Run tests
+        run: python manage.py test
+
+      - name: Build Docker image
+        run: docker build -t estore .
