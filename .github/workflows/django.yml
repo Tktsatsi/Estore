@@ -70,13 +70,13 @@ jobs:
           done
 
       - name: Apply migrations
-        working-directory: ./Estore
+        
         run: python manage.py migrate
 
       - name: Run tests
-        working-directory: ./Estore
+       
         run: python manage.py test
 
       - name: Build Docker image
-        working-directory: ./Estore
+       
         run: docker build -t estore .
